@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { LocalType, PriceRange } from "@prisma/client";
 import { getAuthUserId } from "@/lib/auth";
 
 function normalizeEnum(value: string | null) {
@@ -59,11 +60,20 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const type = normalizeEnum(body.type);
+  const priceRange = normalizeEnum(body.priceRange);
+  if (!type || !priceRange) {
+    return NextResponse.json(
+      { error: "type y priceRange son obligatorios." },
+      { status: 400 }
+    );
+  }
+
   const local = await prisma.local.create({
     data: {
       name: String(body.name).trim(),
-      type: normalizeEnum(body.type),
-      priceRange: normalizeEnum(body.priceRange),
+      type: type as LocalType,
+      priceRange: priceRange as PriceRange,
       description: body.description ? String(body.description) : null,
       address: body.address ? String(body.address) : null,
       city: String(body.city).trim(),

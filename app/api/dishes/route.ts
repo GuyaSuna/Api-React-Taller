@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { DishCategory } from "@prisma/client";
 import { getAuthUserId } from "@/lib/auth";
 
 function normalizeEnum(value: string | null) {
@@ -60,10 +61,18 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const category = normalizeEnum(body.category);
+  if (!category) {
+    return NextResponse.json(
+      { error: "category es obligatorio." },
+      { status: 400 }
+    );
+  }
+
   const dish = await prisma.dish.create({
     data: {
       name: String(body.name).trim(),
-      category: normalizeEnum(body.category),
+      category: category as DishCategory,
       description: body.description ? String(body.description) : null,
       price: body.price ? Number(body.price) : null,
       city: String(body.city).trim(),
