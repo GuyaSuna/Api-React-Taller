@@ -20,9 +20,10 @@ async function recomputeLocalRating(localId: number) {
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const localId = Number(params.id);
+  const { id: rawId } = await params;
+  const localId = Number(rawId);
   if (Number.isNaN(localId)) {
     return NextResponse.json({ error: "ID invalido." }, { status: 400 });
   }
@@ -38,14 +39,15 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const userId = getAuthUserId(request);
   if (!userId) {
     return NextResponse.json({ error: "No autorizado." }, { status: 401 });
   }
 
-  const localId = Number(params.id);
+  const { id: rawId } = await params;
+  const localId = Number(rawId);
   if (Number.isNaN(localId)) {
     return NextResponse.json({ error: "ID invalido." }, { status: 400 });
   }
