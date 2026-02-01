@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# API REST - Rutas del Sabor
 
-## Getting Started
+API REST hecha con Next.js (App Router) + Prisma + MySQL.
 
-First, run the development server:
+## Configuracion rapida
+
+1. Crea el archivo `.env` basado en `.env.example`.
+2. Configura tu base MySQL y actualiza `DATABASE_URL`.
+3. Ejecuta migraciones y seed:
+
+```bash
+npm run db:migrate
+npm run db:seed
+```
+
+4. Levanta el servidor:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Autenticacion
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+JWT simple con header `Authorization: Bearer <token>`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Endpoints principales
 
-## Learn More
+Auth:
+- `POST /api/auth/register` { username, name, password }
+- `POST /api/auth/login` { username, password }
 
-To learn more about Next.js, take a look at the following resources:
+Locales:
+- `GET /api/locals` filtros: `q`, `type`, `priceRange`, `rating`, `city`, `zone`
+- `POST /api/locals` (auth)
+- `GET /api/locals/:id`
+- `GET /api/locals/:id/reviews`
+- `POST /api/locals/:id/reviews` (auth)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Platos:
+- `GET /api/dishes` filtros: `q`, `category`, `dateFrom`, `dateTo`, `city`, `zone`, `localId`
+- `POST /api/dishes` (auth)
+- `GET /api/dishes/:id`
+- `GET /api/dishes/:id/reviews`
+- `POST /api/dishes/:id/reviews` (auth)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Usuarios:
+- `GET /api/users/:id` (muestra locales y platos creados)
 
-## Deploy on Vercel
+Salud:
+- `GET /api/health`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Notas
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Los enums aceptan valores en minusculas o mayusculas (ej: `bar`, `BAR`).
+- `rating` filtra por promedio del local.

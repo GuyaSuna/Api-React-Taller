@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum LocalType {
+  RESTAURANTE
+  CAFETERIA
+  BAR
+  FOOD_TRUCK
+  OTROS
+}
+
+enum PriceRange {
+  ECONOMICO
+  MEDIO
+  ALTO
+}
+
+enum DishCategory {
+  ENTRADA
+  PRINCIPAL
+  POSTRE
+  BEBIDA
+  OTROS
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  locals  Local[]
+  dishes  Dish[]
+  reviews Review[]
+}
+
+model Local {
+  id            Int       @id @default(autoincrement())
+  name          String
+  type          LocalType
+  priceRange    PriceRange
+  description   String?
+  address       String?
+  city          String
+  zone          String?
+  hours         String?
+  photos        Json?
+  ratingAverage Float     @default(0)
+  ratingCount   Int       @default(0)
+  createdAt     DateTime  @default(now())
+
+  creatorId Int
+  creator   User   @relation(fields: [creatorId], references: [id])
+
+  dishes  Dish[]
+  reviews Review[]
+
+  @@index([city])
+  @@index([type])
+  @@index([priceRange])
+}
+
+model Dish {
+  id          Int          @id @default(autoincrement())
+  name        String
+  category    DishCategory
+  description String?
+  price       Float?
+  city        String
+  zone        String?
+  createdAt   DateTime     @default(now())
+
+  localId   Int
+  local     Local @relation(fields: [localId], references: [id])
+
+  creatorId Int
+  creator   User  @relation(fields: [creatorId], references: [id])
+
+  reviews Review[]
+
+  @@index([city])
+  @@index([category])
+  @@index([localId])
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  localId Int?
+  local   Local? @relation(fields: [localId], references: [id])
+
+  dishId Int?
+  dish   Dish? @relation(fields: [dishId], references: [id])
+
+  @@index([localId])
+  @@index([dishId])
+}
