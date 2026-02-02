@@ -12,7 +12,7 @@ export default function Home() {
           <p className="max-w-2xl text-lg text-zinc-700">
             Esta pagina documenta el uso de la API utilizada en el taller de
             React. Usa la URL base pasada por el docente y agrega el endpoint.
-            Ejemplo de base:
+            Base:
             <span className="ml-2 inline-block rounded-md bg-zinc-200 px-2 py-1 text-sm">
               https://api-react-taller-production.up.railway.app
             </span>
